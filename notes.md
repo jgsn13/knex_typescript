@@ -40,3 +40,11 @@ export default routes;
 # Knex.js
 - Podemos usar um query builder para usarmos um banco de dados, como o Knex.js.
 - Basta instalar o pacote `knex` e o driver do banco de dados.
+
+# Migrations
+- Migrations são como um histórico no banco de dados, facilita o desenvolvimento de aplicações escaláveis.
+- Knex tem uma ótima documentação.
+- Comandos para rodar as migrations:
+```
+yarn knex --knexfile knexfile.ts migrate:latest
+```
