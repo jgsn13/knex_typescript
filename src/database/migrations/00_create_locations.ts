@@ -2,10 +2,10 @@ import { Knex } from 'knex';
 
 export async function up(knex: Knex) {
   return knex.schema.createTable('locations', (table) => {
-    table.increments('id').primary();
+    table.increments('id').unique().primary();
     table.string('name').notNullable();
     table.string('image').notNullable();
-    table.string('email').notNullable();
+    table.string('email').unique().notNullable();
     table.string('whatsapp').notNullable();
     table.decimal('latitute').notNullable();
     table.decimal('longitude').notNullable();
