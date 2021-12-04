@@ -50,3 +50,6 @@ yarn knex --knexfile knexfile.ts migrate:latest
 ```
 - SQLite query para mostrar as tabelas criadas:
   `SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%';`
+
+# Seeds
+- Coma as seeds podemos criar vários dados no banco de dados de uma só vez.
