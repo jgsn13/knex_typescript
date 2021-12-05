@@ -4,14 +4,19 @@ import knex from '../database/connection';
 const itemsRouter = Router();
 
 itemsRouter.get('/', async (request, response) => {
-  const items = await knex('items').select('*');
+  try {
+    const items = await knex('items').select('*');
 
-  const serializedItems = items.map((item) => {
-    item.image = `${request.protocol}://${request.headers.host}/uploads/${item.image}`;
-    return item;
-  });
+    const serializedItems = items.map((item) => {
+      item.image = `${request.protocol}://${request.headers.host}/uploads/${item.image}`;
+      return item;
+    });
 
-  return response.json(serializedItems);
+    return response.json(serializedItems);
+  } catch (error) {
+    console.log(error);
+    return response.json({ error });
+  }
 });
 
 export default itemsRouter;
