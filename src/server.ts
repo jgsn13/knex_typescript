@@ -4,7 +4,9 @@ import routes from './routes';
 
 const app = express();
 
-app.use((request) => {
+app.use(express.json());
+
+app.use((request, _response, next) => {
   const { method, url } = request;
   const formatedMethod =
     method === 'GET'
@@ -20,9 +22,9 @@ app.use((request) => {
       : `${method}`;
 
   console.log(`[${formatedMethod}] ${url}`);
-});
 
-app.use(express.json());
+  return next();
+});
 
 app.use(routes);
 
