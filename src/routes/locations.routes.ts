@@ -19,7 +19,9 @@ locationsRouter.post('/', async (request, response) => {
       uf,
     };
 
-    const newIds = await knex('locations').insert(location);
+    const transaction = await knex.transaction();
+
+    const newIds = await transaction('locations').insert(location);
 
     const locationId = newIds[0];
 
@@ -28,7 +30,9 @@ locationsRouter.post('/', async (request, response) => {
       location_id: locationId,
     }));
 
-    await knex('location_items').insert(locationItems);
+    await transaction('location_items').insert(locationItems);
+
+    await transaction.commit();
 
     return response.json({
       id: locationId,
