@@ -19,28 +19,44 @@ locationsRouter.post('/', async (request, response) => {
       uf,
     };
 
-    const transaction = await knex.transaction();
+    const trx = await knex.transaction();
+    try {
+      const newIds = await knex('locations').transacting(trx).insert(location);
 
-    const newIds = await transaction('locations').insert(location);
+      const locationId = newIds[0];
 
-    const locationId = newIds[0];
+      const locationItems = await Promise.all(
+        items.map(async (item_id: number) => {
+          const selectedItem = await knex('items')
+            .transacting(trx)
+            .where('id', item_id)
+            .first();
 
-    const locationItems = items.map((item_id: number) => ({
-      item_id,
-      location_id: locationId,
-    }));
+          if (!selectedItem) throw 'Item not found.';
 
-    await transaction('location_items').insert(locationItems);
+          return {
+            item_id,
+            location_id: locationId,
+          };
+        })
+      );
 
-    await transaction.commit();
+      await trx('location_items').insert(locationItems);
 
-    return response.json({
-      id: locationId,
-      ...location,
-      items,
-    });
+      await trx.commit();
+
+      return response.json({
+        id: locationId,
+        ...location,
+        items,
+      });
+    } catch (err) {
+      trx.rollback();
+
+      throw err;
+    }
   } catch (error) {
-    console.log(error);
+    console.log({ error });
     return response.json({ error });
   }
 });
