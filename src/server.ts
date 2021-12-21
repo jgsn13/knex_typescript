@@ -1,8 +1,15 @@
 import express from 'express';
+import cors from 'cors';
 import { resolve } from 'path';
 import routes from './routes';
 
 const app = express();
+
+app.use(cors());
+// Use case example:
+// app.use(cors({
+//   origin: ['dominio1.com', 'dominio2.com']
+// }));
 
 app.use(express.json());
 
