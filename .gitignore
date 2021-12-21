@@ -133,3 +133,7 @@ dist
 ### Sqlite ###
 *.sqlite
 *.db
+
+### Development file notes ###
+funcionalidades.md
+notes.md
