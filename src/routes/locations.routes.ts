@@ -16,13 +16,21 @@ locationsRouter.get('/', async (request, response) => {
       .split(',')
       .map((item) => Number(item.trim()));
 
-    const locations = await knex('locations')
-      .join('location_items', 'locations.id', '=', 'location_items.location_id')
-      .whereIn('location_items.item_id', parsedItems)
-      .where('city', String(city))
-      .where('uf', String(uf))
-      .distinct()
-      .select('locations.*');
+    const locations =
+      city && uf && items
+        ? await knex('locations')
+            .join(
+              'location_items',
+              'locations.id',
+              '=',
+              'location_items.location_id'
+            )
+            .whereIn('location_items.item_id', parsedItems)
+            .where('city', String(city))
+            .where('uf', String(uf))
+            .distinct()
+            .select('locations.*')
+        : await knex('locations').select('*');
 
     return response.json(locations);
   } catch (error) {
@@ -124,25 +132,29 @@ locationsRouter.post('/', async (request, response) => {
   }
 });
 
-locationsRouter.put('/:id', upload.single('image'), async (request, response) => {
-  try {
-    const { id } = request.params;
+locationsRouter.put(
+  '/:id',
+  upload.single('image'),
+  async (request, response) => {
+    try {
+      const { id } = request.params;
 
-    const image = request.file?.filename;
+      const image = request.file?.filename;
 
-    const location = await knex('locations').where('id', id).first();
+      const location = await knex('locations').where('id', id).first();
 
-    if (!location) throw 'Location not found.';
+      if (!location) throw 'Location not found.';
 
-    const locationUpdated = { ...location, image };
+      const locationUpdated = { ...location, image };
 
-    await knex('locations').update(locationUpdated).where('id', id);
+      await knex('locations').update(locationUpdated).where('id', id);
 
-    return response.json(locationUpdated);
-  } catch (error) {
-    console.log({ error });
-    return response.status(400).json({ error });
+      return response.json(locationUpdated);
+    } catch (error) {
+      console.log({ error });
+      return response.status(400).json({ error });
+    }
   }
-})
+);
 
 export default locationsRouter;
