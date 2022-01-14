@@ -3,6 +3,7 @@ import cors from "cors";
 import { resolve } from "path";
 import { errors } from "celebrate";
 import routes from "./routes";
+import requestLogger from "./middlewares/requestLogger";
 
 const app = express();
 
@@ -14,25 +15,7 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use((request, _response, next) => {
-  const { method, url } = request;
-  const formatedMethod =
-    method === "GET"
-      ? "\x1b[32mGET\x1b[0m"
-      : method === "POST"
-      ? "\x1b[33mPOST\x1b[0m"
-      : method === "PUT"
-      ? "\x1b[34mPUT\x1b[0m"
-      : method === "PATCH"
-      ? "\x1b[37mPATCH\x1b[0m"
-      : method === "DELETE\x1b[0m"
-      ? "\x1b[31mDELETE"
-      : `${method}`;
-
-  console.log(`[${formatedMethod}] ${url}`);
-
-  return next();
-});
+app.use(requestLogger);
 
 app.use(routes);
 
