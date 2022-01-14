@@ -3,10 +3,13 @@ import multer from "multer";
 import { celebrate, Joi } from "celebrate";
 import knex from "../database/connection";
 import multerConfig from "../config/multer";
+import isAuthenticated from "../middlewares/isAuthenticaded";
 
 const locationsRouter = Router();
 
 const upload = multer(multerConfig);
+
+locationsRouter.use(isAuthenticated);
 
 locationsRouter.get("/", async (request, response) => {
   try {
@@ -20,17 +23,17 @@ locationsRouter.get("/", async (request, response) => {
     const locations =
       city && uf && items
         ? await knex("locations")
-            .join(
-              "location_items",
-              "locations.id",
-              "=",
-              "location_items.location_id"
-            )
-            .whereIn("location_items.item_id", parsedItems)
-            .where("city", String(city))
-            .where("uf", String(uf))
-            .distinct()
-            .select("locations.*")
+          .join(
+            "location_items",
+            "locations.id",
+            "=",
+            "location_items.location_id"
+          )
+          .whereIn("location_items.item_id", parsedItems)
+          .where("city", String(city))
+          .where("uf", String(uf))
+          .distinct()
+          .select("locations.*")
         : await knex("locations").select("*");
 
     return response.json(locations);
