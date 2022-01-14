@@ -2,6 +2,7 @@ import { Router } from "express";
 import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import knex from "../database/connection";
+import authConfig from "../config/auth";
 
 const sessionsRouter = Router();
 
@@ -17,9 +18,9 @@ sessionsRouter.post("/", async (request, response) => {
 
     if (!comparePassword) throw "Credentials not found.";
 
-    const token = sign({}, "a4a3ffcf6ce28e3f636b499f4c5ad839", {
+    const token = sign({}, authConfig.jwt.secret, {
       subject: String(user.id), // always must be the user id
-      expiresIn: "1d", // depends on application type
+      expiresIn: authConfig.jwt.expiresIn, // depends on application type
     });
 
     delete user.password;
